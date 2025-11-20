@@ -1,0 +1,204 @@
+erDiagram
+    users ||--o{ user_body_info : "has"
+    users ||--o{ subscriptions : "subscribes"
+    users ||--o{ payment_history : "pays"
+    users ||--o{ activity_logs : "records"
+    users ||--o{ wearable_data : "syncs"
+    users ||--o{ ai_recommended_routines : "receives"
+    users ||--o{ user_routine_progress : "progresses"
+    users ||--o{ challenge_participation : "participates"
+    users ||--o{ pose_analysis : "analyzes"
+    users ||--o{ ranking : "ranks"
+    
+    subscription_plans ||--o{ subscriptions : "offered_in"
+    subscription_plans ||--o{ payment_history : "billed_for"
+    
+    routines ||--o{ routine_items : "contains"
+    routines ||--o{ activity_logs : "tracked_in"
+    routines ||--o{ routine_flow : "guides"
+    routines ||--o{ user_routine_progress : "progresses_through"
+    
+    exercise ||--o{ routine_items : "included_in"
+    exercise ||--o{ activity_detail_logs : "performed"
+    exercise ||--o{ pose_analysis : "analyzed"
+    exercise ||--o{ routine_flow : "sequenced"
+    
+    activity_logs ||--o{ activity_detail_logs : "details"
+    
+    challenges ||--o{ challenge_participation : "joined"
+    
+    users {
+        UUID id PK
+        VARCHAR email UK
+        TEXT password_hash
+        VARCHAR name
+        VARCHAR phone
+        DATE birthdate
+        VARCHAR gender
+        VARCHAR goal
+        TIMESTAMP created_at
+        BOOLEAN is_active
+    }
+    
+    user_body_info {
+        UUID id PK
+        UUID user_id FK
+        NUMERIC height_cm
+        NUMERIC weight_kg
+        NUMERIC body_fat
+        NUMERIC skeletal_muscle
+        NUMERIC bmr
+        INT visceral_fat_level
+        NUMERIC water
+        NUMERIC bmi
+        TIMESTAMP updated_at
+    }
+    
+    subscription_plans {
+        UUID id PK
+        VARCHAR name
+        NUMERIC price
+        TEXT description
+    }
+    
+    subscriptions {
+        UUID id PK
+        UUID user_id FK
+        UUID plan_id FK
+        VARCHAR status
+        DATE start_date
+        DATE end_date
+        DATE next_billing_date
+    }
+    
+    payment_history {
+        UUID id PK
+        UUID user_id FK
+        UUID plan_id FK
+        NUMERIC amount
+        TIMESTAMP paid_at
+        VARCHAR payment_method
+        VARCHAR refund_status
+    }
+    
+    exercise {
+        UUID id PK
+        VARCHAR name
+        VARCHAR category
+        INT difficulty
+        TEXT description
+        TEXT video_url
+    }
+    
+    routines {
+        UUID id PK
+        VARCHAR name
+        TEXT description
+    }
+    
+    routine_items {
+        UUID id PK
+        UUID routine_id FK
+        UUID exercise_id FK
+        INT set_count
+        INT reps
+        INT duration_sec
+        INT rest_sec
+    }
+    
+    ai_recommended_routines {
+        UUID id PK
+        UUID user_id FK
+        TIMESTAMP created_at
+        NUMERIC total_time_min
+        NUMERIC total_calories
+    }
+    
+    activity_logs {
+        UUID id PK
+        UUID user_id FK
+        UUID routine_id FK
+        TIMESTAMP start_time
+        TIMESTAMP end_time
+        NUMERIC total_time_min
+        NUMERIC total_calories
+    }
+    
+    activity_detail_logs {
+        UUID id PK
+        UUID activity_id FK
+        UUID exercise_id FK
+        INT set_number
+        INT reps_done
+        NUMERIC score
+    }
+    
+    pose_analysis {
+        UUID id PK
+        UUID user_id FK
+        UUID exercise_id FK
+        TEXT frame_file_name
+        JSONB angles_json
+        JSONB issues_json
+        NUMERIC score
+        TEXT feedback_text
+        TIMESTAMP created_at
+    }
+    
+    wearable_data {
+        UUID id PK
+        UUID user_id FK
+        VARCHAR source
+        INT steps
+        INT heart_rate
+        INT sleep_minutes
+        NUMERIC calories_active
+        TIMESTAMP recorded_at
+        JSONB raw_json
+    }
+    
+    routine_flow {
+        UUID id PK
+        UUID routine_id FK
+        UUID exercise_id FK
+        INT step_number
+        INT set_count
+        INT reps
+        INT duration_sec
+        INT rest_sec
+        TEXT tts_script
+        TEXT guidance_text
+    }
+    
+    user_routine_progress {
+        UUID id PK
+        UUID user_id FK
+        UUID routine_id FK
+        INT current_step
+        INT current_set
+        VARCHAR status
+        TIMESTAMP updated_at
+    }
+    
+    challenges {
+        UUID id PK
+        VARCHAR title
+        INT period_days
+        VARCHAR reward_type
+        TEXT description
+    }
+    
+    challenge_participation {
+        UUID id PK
+        UUID user_id FK
+        UUID challenge_id FK
+        NUMERIC progress_percent
+        NUMERIC score
+    }
+    
+    ranking {
+        UUID id PK
+        UUID user_id FK
+        NUMERIC score
+        INT weekly_rank
+    }
